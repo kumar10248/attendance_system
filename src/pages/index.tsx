@@ -1,9 +1,12 @@
 import { useEffect, useState, useCallback, useMemo, memo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Digital } from "react-activity";
-import { User, MapPin, Users, BookOpen, Calendar, Download, Search, Sparkles } from "lucide-react";
+import { 
+  User, MapPin, Users, BookOpen, Calendar, Download, Search, 
+  Sparkles, TrendingUp, Award, Zap, Star, CheckCircle, XCircle 
+} from "lucide-react";
 import "react-activity/dist/Digital.css";
 
 interface Student {
@@ -20,31 +23,47 @@ interface Filters {
   group: string;
 }
 
-// Memoized stat card component
-const StatCard = memo(({ icon: Icon, label, value, colorClass }: { 
+// Modern 3D Stat Card
+const StatCard = memo(({ icon: Icon, label, value, colorClass, gradient }: { 
   icon: React.ElementType; 
   label: string; 
   value: number; 
   colorClass: string;
+  gradient: string;
 }) => (
-  <Card className="bg-card hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-2 border-border/50 overflow-hidden group">
-    <div className="absolute inset-0 bg-gradient-amber-purple opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
-    <CardContent className="p-6 text-center relative z-10">
-      <div className="mb-3 flex justify-center">
-        <div className={`p-3 rounded-full ${colorClass} bg-opacity-10 group-hover:scale-110 transition-transform duration-300`}>
-          <Icon size={28} className={colorClass} />
+  <div className="card-3d ultra-glass rounded-3xl p-8 relative overflow-hidden group">
+    {/* Animated background gradient */}
+    <div className={`absolute inset-0 ${gradient} opacity-0 group-hover:opacity-20 transition-all duration-500`} />
+    
+    {/* Decorative elements */}
+    <div className="absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br from-amber-500/20 to-purple-500/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
+    
+    <div className="relative z-10">
+      <div className="flex items-center justify-between mb-6">
+        <div className={`p-4 rounded-2xl ${colorClass} bg-opacity-10 backdrop-blur-sm shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+          <Icon size={32} className={colorClass} strokeWidth={2.5} />
         </div>
+        <Star className={`${colorClass} opacity-30 group-hover:opacity-100 transition-opacity duration-300`} size={24} />
       </div>
-      <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+      
+      <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2 opacity-80">
         {label}
       </p>
-      <p className={`text-4xl font-bold ${colorClass}`}>{value}</p>
-    </CardContent>
-  </Card>
+      <p className={`text-5xl font-black ${colorClass} mb-2`}>{value}</p>
+      
+      {/* Progress indicator */}
+      <div className="h-1.5 bg-muted rounded-full overflow-hidden mt-4">
+        <div 
+          className={`h-full ${gradient} rounded-full transition-all duration-1000 ease-out`}
+          style={{ width: `${Math.min(value / 5, 100)}%` }}
+        />
+      </div>
+    </div>
+  </div>
 ));
 StatCard.displayName = "StatCard";
 
-// Memoized student card component
+// Ultra Modern Student Card with 3D Effect
 const StudentCard = memo(({ 
   student, 
   isPresent, 
@@ -54,86 +73,117 @@ const StudentCard = memo(({
   isPresent: boolean; 
   onToggle: (uid: string) => void;
 }) => (
-  <Card className="group overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 bg-card border-2 border-border/50 animate-fade-in">
-    <CardContent className="p-0 relative">
-      <div className="relative overflow-hidden">
-        <div className="h-28 bg-gradient-amber-purple relative">
-          <div className="absolute inset-0 shimmer opacity-30" />
+  <div className="card-3d ultra-glass rounded-3xl overflow-hidden group relative">
+    {/* Gradient header with mesh background */}
+    <div className="relative h-36 bg-gradient-to-br from-amber-500 via-purple-500 to-amber-600 overflow-hidden">
+      {/* Animated mesh pattern */}
+      <div className="absolute inset-0 bg-mesh-gradient opacity-50" />
+      <div className="absolute inset-0 shimmer" />
+      
+      {/* Floating particles effect */}
+      <div className="absolute top-4 right-4 w-2 h-2 bg-white rounded-full animate-ping" />
+      <div className="absolute top-8 right-12 w-1.5 h-1.5 bg-white rounded-full animate-pulse delay-75" />
+      <div className="absolute top-6 right-20 w-1 h-1 bg-white rounded-full animate-ping delay-150" />
+      
+      {/* Status badge - floating */}
+      <div className="absolute top-4 left-4 z-20">
+        <div className={`px-4 py-2 rounded-full backdrop-blur-xl font-bold text-xs shadow-2xl border-2 flex items-center gap-2 ${
+          isPresent
+            ? "bg-green-500/90 text-white border-green-300/50"
+            : "bg-red-500/90 text-white border-red-300/50"
+        }`}>
+          {isPresent ? <CheckCircle size={14} /> : <XCircle size={14} />}
+          {isPresent ? "Present" : "Absent"}
         </div>
-        
-        <div className="absolute -bottom-14 inset-x-0 flex justify-center">
-          <div className="w-28 h-28 rounded-full border-4 border-card shadow-2xl bg-gradient-to-br from-amber-500 to-purple-500 p-1 group-hover:scale-110 transition-transform duration-300">
-            <div className="w-full h-full rounded-full bg-card flex items-center justify-center">
-              <User size={40} className="text-primary" />
-            </div>
+      </div>
+    </div>
+
+    {/* Profile avatar - 3D floating */}
+    <div className="absolute left-1/2 top-24 -translate-x-1/2 z-10">
+      <div className="relative group/avatar">
+        <div className="w-32 h-32 rounded-3xl border-4 border-card shadow-2xl bg-gradient-to-br from-amber-400 via-purple-500 to-amber-600 p-1 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 float">
+          <div className="w-full h-full rounded-[20px] bg-card flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-purple-500/20" />
+            <User size={48} className="text-primary relative z-10" strokeWidth={2} />
+          </div>
+        </div>
+        {/* Glow effect */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-purple-500 rounded-3xl blur-xl opacity-50 group-hover/avatar:opacity-75 transition-opacity -z-10" />
+      </div>
+    </div>
+
+    {/* Content */}
+    <div className="pt-24 px-6 pb-6 relative">
+      {/* Name with gradient */}
+      <h3 className="text-2xl font-black text-center text-foreground mb-6 line-clamp-2 min-h-[4rem] text-shimmer">
+        {student.name}
+      </h3>
+
+      {/* Info Grid with 3D cards */}
+      <div className="space-y-3 mb-8">
+        <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-amber-500/10 to-amber-500/5 hover:from-amber-500/20 hover:to-amber-500/10 transition-all duration-300 group/item">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 shadow-lg group-hover/item:scale-110 transition-transform">
+            <BookOpen size={18} className="text-white" strokeWidth={2.5} />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs text-muted-foreground font-semibold uppercase">UID</p>
+            <p className="text-sm font-bold text-foreground">{student.uid}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-purple-500/10 to-purple-500/5 hover:from-purple-500/20 hover:to-purple-500/10 transition-all duration-300 group/item">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg group-hover/item:scale-110 transition-transform">
+            <Users size={18} className="text-white" strokeWidth={2.5} />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs text-muted-foreground font-semibold uppercase">Section</p>
+            <p className="text-sm font-bold text-foreground">{student.section}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-silver-500/10 to-silver-500/5 hover:from-silver-500/20 hover:to-silver-500/10 transition-all duration-300 group/item">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-silver-500 to-silver-600 shadow-lg group-hover/item:scale-110 transition-transform">
+            <MapPin size={18} className="text-white" strokeWidth={2.5} />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs text-muted-foreground font-semibold uppercase">Group</p>
+            <p className="text-sm font-bold text-foreground">{student.group}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-amber-500/10 to-purple-500/5 hover:from-amber-500/20 hover:to-purple-500/10 transition-all duration-300 group/item">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-amber-500 to-purple-500 shadow-lg group-hover/item:scale-110 transition-transform">
+            <Calendar size={18} className="text-white" strokeWidth={2.5} />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs text-muted-foreground font-semibold uppercase">Batch</p>
+            <p className="text-sm font-bold text-foreground">{student.batch}</p>
           </div>
         </div>
       </div>
 
-      <div className="pt-20 px-6 pb-6">
-        <h3 className="text-xl font-bold text-center text-foreground mb-4 line-clamp-2 min-h-[3.5rem]">
-          {student.name}
-        </h3>
-
-        <div className="space-y-3 mb-6">
-          <div className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors">
-            <div className="p-2 rounded-lg bg-amber-500/10">
-              <BookOpen size={16} className="text-amber-600 dark:text-amber-500" />
-            </div>
-            <span className="text-sm font-medium">{student.uid}</span>
-          </div>
-          <div className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors">
-            <div className="p-2 rounded-lg bg-purple-500/10">
-              <Users size={16} className="text-purple-600 dark:text-purple-500" />
-            </div>
-            <span className="text-sm font-medium">Section {student.section}</span>
-          </div>
-          <div className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors">
-            <div className="p-2 rounded-lg bg-silver-500/10">
-              <MapPin size={16} className="text-silver-600 dark:text-silver-500" />
-            </div>
-            <span className="text-sm font-medium">Group {student.group}</span>
-          </div>
-          <div className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors">
-            <div className="p-2 rounded-lg bg-amber-500/10">
-              <Calendar size={16} className="text-amber-600 dark:text-amber-500" />
-            </div>
-            <span className="text-sm font-medium">Batch {student.batch}</span>
-          </div>
-        </div>
-
-        <div className="absolute top-3 right-3">
-          <span className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm ${
-            isPresent
-              ? "bg-green-500/90 text-white"
-              : "bg-red-500/90 text-white"
-          }`}>
-            {isPresent ? "✓ Present" : "✗ Absent"}
-          </span>
-        </div>
-
-        <Button
-          onClick={() => onToggle(student.uid)}
-          className={`w-full transform transition-all duration-300 hover:scale-105 font-semibold shadow-lg ${
-            isPresent
-              ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
-              : "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
-          }`}
-        >
+      {/* Action Button - Modern 3D */}
+      <button
+        onClick={() => onToggle(student.uid)}
+        className={`w-full py-4 px-6 rounded-2xl font-black text-white shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-3xl active:scale-95 relative overflow-hidden group/btn ${
+          isPresent
+            ? "bg-gradient-to-r from-green-500 via-green-600 to-green-500"
+            : "bg-gradient-to-r from-red-500 via-red-600 to-red-500"
+        }`}
+      >
+        <span className="absolute inset-0 shimmer" />
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {isPresent ? <XCircle size={20} /> : <CheckCircle size={20} />}
           Mark {isPresent ? "Absent" : "Present"}
-        </Button>
-      </div>
-    </CardContent>
-  </Card>
+        </span>
+      </button>
+    </div>
+  </div>
 ));
 StudentCard.displayName = "StudentCard";
 
 const Home = () => {
-  const [filters, setFilters] = useState<Filters>({
-    search: "",
-    section: "",
-    group: "",
-  });
+  const [filters, setFilters] = useState<Filters>({ search: "", section: "", group: "" });
   const [data, setData] = useState<Student[]>([]);
   const [loading, setLoading] = useState(false);
   const [attendance, setAttendance] = useState<Record<string, boolean>>({});
@@ -179,7 +229,7 @@ const Home = () => {
       setAttendance(initialAttendance);
       setLastUpdated(new Date());
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while fetching data');
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -194,34 +244,24 @@ const Home = () => {
     const sectionLower = filters.section.toLowerCase().trim();
     const groupLower = filters.group.toLowerCase().trim();
 
-    if (!searchLower && !sectionLower && !groupLower) {
-      return data;
-    }
+    if (!searchLower && !sectionLower && !groupLower) return data;
 
     return data.filter((student) => {
       const matchesSearch = !searchLower || 
         student.name.toLowerCase().includes(searchLower) ||
         student.uid.toLowerCase().includes(searchLower) ||
         student.section.toLowerCase().includes(searchLower);
-      
-      const matchesSection = !sectionLower || 
-        student.section.toLowerCase().includes(sectionLower);
-      
-      const matchesGroup = !groupLower || 
-        student.group.toLowerCase().includes(groupLower);
-      
+      const matchesSection = !sectionLower || student.section.toLowerCase().includes(sectionLower);
+      const matchesGroup = !groupLower || student.group.toLowerCase().includes(groupLower);
       return matchesSearch && matchesSection && matchesGroup;
     });
   }, [data, filters]);
 
   const handleSearch = useCallback(() => {
-    const filtered = getFilteredData();
-    setDisplayedData(filtered);
+    setDisplayedData(getFilteredData());
   }, [getFilteredData]);
 
-  const handleFilterChange = useCallback((key: keyof Filters) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFilterChange = useCallback((key: keyof Filters) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters(prev => ({ ...prev, [key]: e.target.value }));
   }, []);
 
@@ -233,7 +273,6 @@ const Home = () => {
     setIsExporting(true);
     try {
       const XLSXModule = await import("xlsx");
-      
       const attendanceData = displayedData.map((student) => ({
         UID: student.uid,
         Name: student.name,
@@ -243,20 +282,14 @@ const Home = () => {
         Status: attendance[student.uid] ? "Present" : "Absent",
         Timestamp: new Date().toLocaleString(),
       }));
-
       const worksheet = XLSXModule.utils.json_to_sheet(attendanceData);
       const workbook = XLSXModule.utils.book_new();
       XLSXModule.utils.book_append_sheet(workbook, worksheet, "Attendance");
-      
       const maxWidth = attendanceData.reduce((w, r) => Math.max(w, r.Name.length), 10);
-      worksheet["!cols"] = [
-        { wch: 15 }, { wch: maxWidth }, { wch: 10 }, 
-        { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 20 }
-      ];
-
+      worksheet["!cols"] = [{ wch: 15 }, { wch: maxWidth }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 20 }];
       XLSXModule.writeFile(workbook, `Attendance_${new Date().toISOString().split('T')[0]}.xlsx`);
     } catch (err) {
-      setError("Failed to export data. Please try again.");
+      setError("Failed to export data.");
     } finally {
       setIsExporting(false);
     }
@@ -272,115 +305,162 @@ const Home = () => {
   }), [displayedData, attendance]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-amber-50/20 to-purple-50/20 dark:from-background dark:via-amber-950/10 dark:to-purple-950/10">
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-        <header className="text-center glass-effect rounded-2xl shadow-xl p-8 animate-fade-in border-2 border-border/50">
-          <div className="flex items-center justify-center mb-3">
-            <Sparkles className="text-amber-500 mr-2" size={32} />
-            <h1 className="text-5xl font-extrabold bg-gradient-amber-purple bg-clip-text text-transparent">
-              Attendance Portal
-            </h1>
-            <Sparkles className="text-purple-500 ml-2" size={32} />
-          </div>
-          <h2 className="text-xl text-muted-foreground font-medium">
-            Chandigarh University - CSE Department
-          </h2>
-          {lastUpdated && (
-            <p className="text-sm text-muted-foreground mt-3 flex items-center justify-center gap-2">
-              <Calendar size={16} />
-              Last updated: {lastUpdated.toLocaleString()}
-            </p>
-          )}
-          {stats.total > 0 && (
-            <div className="mt-4 inline-block px-6 py-2 rounded-full bg-gradient-amber-purple text-white font-bold text-lg shadow-lg">
-              Attendance Rate: {stats.percentage}%
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Animated background with mesh gradient */}
+      <div className="fixed inset-0 bg-background bg-mesh-gradient" />
+      
+      {/* Floating orbs */}
+      <div className="fixed top-20 left-20 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl animate-pulse" />
+      <div className="fixed bottom-20 right-20 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+      
+      <div className="relative z-10 max-w-[1600px] mx-auto px-6 py-12 space-y-12">
+        {/* Hero Header */}
+        <header className="text-center fade-in-scale">
+          <div className="ultra-glass rounded-[32px] p-12 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-purple-500/10 to-amber-500/10 animate-pulse" />
+            
+            <div className="relative z-10">
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <Sparkles className="text-amber-500 animate-spin" size={40} />
+                <h1 className="text-7xl font-black text-shimmer neon-glow">
+                  Attendance Portal
+                </h1>
+                <Zap className="text-purple-500 animate-bounce" size={40} />
+              </div>
+              
+              <p className="text-2xl font-bold text-muted-foreground mb-6">
+                Chandigarh University • CSE Department
+              </p>
+              
+              {lastUpdated && (
+                <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full glass-effect">
+                  <Calendar size={20} className="text-amber-500" />
+                  <span className="text-sm font-semibold">
+                    Last updated: {lastUpdated.toLocaleString()}
+                  </span>
+                </div>
+              )}
+              
+              {stats.total > 0 && (
+                <div className="mt-8 inline-block">
+                  <div className="px-12 py-5 rounded-[28px] bg-gradient-to-r from-amber-500 via-purple-500 to-amber-500 text-white font-black text-3xl shadow-2xl pulse-glow relative overflow-hidden">
+                    <div className="absolute inset-0 shimmer" />
+                    <span className="relative z-10 flex items-center gap-3">
+                      <Award size={32} />
+                      Attendance Rate: {stats.percentage}%
+                      <TrendingUp size={32} />
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </header>
 
-        <div className="glass-effect rounded-2xl shadow-xl p-6 animate-fade-in border-2 border-border/50">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        {/* Search Controls */}
+        <div className="ultra-glass rounded-[28px] p-8 slide-in-right">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
             <Input
               value={filters.search}
               onChange={handleFilterChange("search")}
-              placeholder="🔍 Search by name, UID, or section"
-              className="w-full bg-background/50 border-2 border-silver-500/30 focus:border-primary transition-all"
+              placeholder="🔍 Search by name, UID..."
+              className="h-14 rounded-2xl bg-background/50 border-2 border-silver-500/30 focus:border-amber-500 transition-all text-lg font-semibold"
             />
             <Input
               value={filters.section}
               onChange={handleFilterChange("section")}
-              placeholder="📚 Filter by section"
-              className="w-full bg-background/50 border-2 border-silver-500/30 focus:border-accent transition-all"
+              placeholder="�� Section"
+              className="h-14 rounded-2xl bg-background/50 border-2 border-silver-500/30 focus:border-purple-500 transition-all text-lg font-semibold"
             />
             <Input
               value={filters.group}
               onChange={handleFilterChange("group")}
-              placeholder="👥 Filter by group"
-              className="w-full bg-background/50 border-2 border-silver-500/30 focus:border-accent transition-all"
+              placeholder="👥 Group"
+              className="h-14 rounded-2xl bg-background/50 border-2 border-silver-500/30 focus:border-purple-500 transition-all text-lg font-semibold"
             />
             <Button 
               onClick={handleSearch}
-              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all gap-2"
+              className="h-14 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-black text-lg shadow-2xl hover:shadow-amber-500/50 transition-all"
             >
-              <Search size={18} />
+              <Search size={22} />
               Search
             </Button>
             <Button 
               onClick={handleExport}
-              className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all gap-2"
+              className="h-14 rounded-2xl bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-black text-lg shadow-2xl hover:shadow-purple-500/50 transition-all"
               disabled={displayedData.length === 0 || isExporting}
             >
-              <Download size={18} />
+              <Download size={22} />
               {isExporting ? "Exporting..." : "Export"}
             </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
-          <StatCard icon={Users} label="Total Students" value={stats.total} colorClass="text-amber-600 dark:text-amber-500" />
-          <StatCard icon={User} label="Present" value={stats.present} colorClass="text-green-600 dark:text-green-500" />
-          <StatCard icon={User} label="Absent" value={stats.absent} colorClass="text-red-600 dark:text-red-500" />
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 fade-in">
+          <StatCard 
+            icon={Users} 
+            label="Total Students" 
+            value={stats.total} 
+            colorClass="text-amber-600 dark:text-amber-400" 
+            gradient="bg-gradient-to-br from-amber-500 to-amber-600"
+          />
+          <StatCard 
+            icon={CheckCircle} 
+            label="Present Today" 
+            value={stats.present} 
+            colorClass="text-green-600 dark:text-green-400" 
+            gradient="bg-gradient-to-br from-green-500 to-green-600"
+          />
+          <StatCard 
+            icon={XCircle} 
+            label="Absent Today" 
+            value={stats.absent} 
+            colorClass="text-red-600 dark:text-red-400" 
+            gradient="bg-gradient-to-br from-red-500 to-red-600"
+          />
         </div>
 
         {error && (
-          <div className="bg-destructive/10 border-2 border-destructive text-destructive-foreground px-6 py-4 rounded-lg animate-fade-in font-medium">
+          <div className="ultra-glass border-2 border-red-500 text-red-600 px-8 py-6 rounded-3xl font-bold text-lg fade-in-scale">
             ⚠️ {error}
           </div>
         )}
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-16 space-y-4">
-            <Digital color="hsl(var(--primary))" size={48} speed={1} animating={true} />
-            <p className="text-muted-foreground text-lg font-medium">Loading students data...</p>
+          <div className="flex flex-col items-center justify-center py-24 space-y-6">
+            <Digital color="hsl(var(--primary))" size={64} speed={1} animating={true} />
+            <p className="text-2xl font-bold text-muted-foreground">Loading students...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {displayedData.length > 0 ? (
-              displayedData.map((student) => (
-                <StudentCard
-                  key={student.uid}
-                  student={student}
-                  isPresent={attendance[student.uid]}
-                  onToggle={handleAttendance}
-                />
+              displayedData.map((student, idx) => (
+                <div key={student.uid} className="fade-in" style={{ animationDelay: `${idx * 0.05}s` }}>
+                  <StudentCard
+                    student={student}
+                    isPresent={attendance[student.uid]}
+                    onToggle={handleAttendance}
+                  />
+                </div>
               ))
             ) : (
               <div className="col-span-full">
-                <Card className="p-12 text-center glass-effect border-2 border-dashed border-border">
-                  <div className="flex flex-col items-center justify-center space-y-4">
-                    <div className="p-6 rounded-full bg-muted">
-                      <Search size={48} className="text-muted-foreground" />
+                <div className="ultra-glass p-20 text-center rounded-[32px] border-2 border-dashed border-border">
+                  <div className="space-y-6">
+                    <div className="p-8 rounded-full bg-gradient-to-br from-amber-500/20 to-purple-500/20 inline-block">
+                      <Search size={64} className="text-muted-foreground" />
                     </div>
-                    <h3 className="text-2xl font-bold text-foreground">
+                    <h3 className="text-3xl font-black text-foreground">
                       {data.length > 0 ? 'No students found' : 'Ready to start'}
                     </h3>
-                    <p className="text-muted-foreground max-w-md">
+                    <p className="text-lg text-muted-foreground max-w-md mx-auto">
                       {data.length > 0 
-                        ? 'Try adjusting your search filters to find students' 
-                        : 'Click the search button to load and view all students'}
+                        ? 'Try adjusting your search filters' 
+                        : 'Click search to load students'}
                     </p>
                   </div>
-                </Card>
+                </div>
               </div>
             )}
           </div>
