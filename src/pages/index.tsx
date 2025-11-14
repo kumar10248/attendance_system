@@ -23,7 +23,7 @@ interface Filters {
   group: string;
 }
 
-// Premium 3D Stat Card
+// Premium 3D Stat Card - RESPONSIVE
 const StatCard = memo(({ icon: Icon, label, value, colorClass, gradient }: { 
   icon: React.ElementType; 
   label: string; 
@@ -31,32 +31,36 @@ const StatCard = memo(({ icon: Icon, label, value, colorClass, gradient }: {
   colorClass: string;
   gradient: string;
 }) => (
-  <div className="card-3d ultra-glass rounded-[32px] p-10 relative overflow-hidden group border border-amber-500/10 hover:border-amber-500/25 transition-all duration-500">
+  <div className="card-3d ultra-glass rounded-2xl sm:rounded-[32px] p-6 sm:p-8 lg:p-10 relative overflow-hidden group border border-amber-500/10 hover:border-amber-500/25 transition-all duration-500">
     {/* Animated background gradient */}
     <div className={`absolute inset-0 ${gradient} opacity-0 group-hover:opacity-25 transition-all duration-500`} />
     
     {/* Enhanced decorative elements */}
-    <div className="absolute -right-10 -top-10 w-40 h-40 bg-gradient-to-br from-amber-500/20 to-purple-500/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
-    <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-gradient-to-tr from-purple-500/15 to-amber-500/15 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700" />
+    <div className="absolute -right-6 sm:-right-10 -top-6 sm:-top-10 w-24 sm:w-32 lg:w-40 h-24 sm:h-32 lg:h-40 bg-gradient-to-br from-amber-500/20 to-purple-500/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
+    <div className="absolute -left-4 sm:-left-8 -bottom-4 sm:-bottom-8 w-20 sm:w-32 h-20 sm:h-32 bg-gradient-to-tr from-purple-500/15 to-amber-500/15 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700" />
     
     <div className="relative z-10">
-      <div className="flex items-center justify-between mb-8">
-        <div className={`p-5 rounded-[20px] ${gradient} shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative overflow-hidden`}>
+      <div className="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8">
+        <div className={`p-3 sm:p-4 lg:p-5 rounded-2xl sm:rounded-[20px] ${gradient} shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative overflow-hidden`}>
           <div className="absolute inset-0 shimmer opacity-20" />
-          <Icon size={36} className="text-white relative z-10" strokeWidth={2.5} />
+          <Icon size={24} className="text-white relative z-10 sm:hidden" strokeWidth={2.5} />
+          <Icon size={32} className="hidden sm:block lg:hidden text-white relative z-10" strokeWidth={2.5} />
+          <Icon size={36} className="hidden lg:block text-white relative z-10" strokeWidth={2.5} />
         </div>
         <div className="relative">
-          <Star className={`${colorClass} opacity-40 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-180 group-hover:scale-125 drop-shadow-lg`} size={28} strokeWidth={2.5} />
+          <Star className={`${colorClass} opacity-40 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-180 group-hover:scale-125 drop-shadow-lg`} size={20} strokeWidth={2.5} />
+          <Star className={`hidden sm:block ${colorClass} opacity-40 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-180 group-hover:scale-125 drop-shadow-lg`} size={24} strokeWidth={2.5} />
+          <Star className={`hidden lg:block ${colorClass} opacity-40 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-180 group-hover:scale-125 drop-shadow-lg`} size={28} strokeWidth={2.5} />
         </div>
       </div>
       
-      <p className="text-sm font-black text-muted-foreground uppercase tracking-[0.2em] mb-3 opacity-90">
+      <p className="text-xs sm:text-sm font-black text-muted-foreground uppercase tracking-[0.15em] sm:tracking-[0.2em] mb-2 sm:mb-3 opacity-90">
         {label}
       </p>
-      <p className={`text-6xl font-black ${colorClass} mb-4 drop-shadow-lg tracking-tight`}>{value}</p>
+      <p className={`text-4xl sm:text-5xl lg:text-6xl font-black ${colorClass} mb-2 sm:mb-4 drop-shadow-lg tracking-tight`}>{value}</p>
       
       {/* Enhanced progress indicator */}
-      <div className="h-2 bg-muted/50 rounded-full overflow-hidden mt-6 shadow-inner">
+      <div className="h-1.5 sm:h-2 bg-muted/50 rounded-full overflow-hidden mt-4 sm:mt-6 shadow-inner">
         <div 
           className={`h-full ${gradient} rounded-full transition-all duration-1000 ease-out shadow-lg relative overflow-hidden`}
           style={{ width: `${Math.min(value / 5, 100)}%` }}
@@ -66,7 +70,7 @@ const StatCard = memo(({ icon: Icon, label, value, colorClass, gradient }: {
       </div>
       
       {/* Percentage label */}
-      <p className="text-xs font-bold text-muted-foreground mt-2 text-right">
+      <p className="text-[10px] sm:text-xs font-bold text-muted-foreground mt-1 sm:mt-2 text-right">
         {Math.min(Math.round((value / 5) * 100), 100)}% capacity
       </p>
     </div>
@@ -334,51 +338,54 @@ const Home = () => {
       {/* Animated background with mesh gradient */}
       <div className="fixed inset-0 bg-background bg-mesh-gradient" />
       
-      {/* Floating orbs */}
-      <div className="fixed top-20 left-20 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl animate-pulse" />
-      <div className="fixed bottom-20 right-20 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+      {/* Floating orbs - hidden on mobile */}
+      <div className="hidden md:block fixed top-20 left-20 w-64 h-64 lg:w-96 lg:h-96 bg-amber-500/20 rounded-full blur-3xl animate-pulse" />
+      <div className="hidden md:block fixed bottom-20 right-20 w-64 h-64 lg:w-96 lg:h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
       
-      <div className="relative z-10 max-w-[1600px] mx-auto px-6 py-12 space-y-12">
+      <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 space-y-6 sm:space-y-8 lg:space-y-12">
         {/* Hero Header */}
         <header className="text-center fade-in-scale">
-          <div className="ultra-glass rounded-[40px] p-14 relative overflow-hidden border border-amber-500/10">
+          <div className="ultra-glass rounded-3xl sm:rounded-[40px] p-6 sm:p-10 lg:p-14 relative overflow-hidden border border-amber-500/10">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-purple-500/10 to-amber-500/10 animate-pulse" />
             
-            {/* Decorative corner elements */}
-            <div className="absolute top-0 left-0 w-32 h-32 bg-amber-500/10 rounded-br-[100%]" />
-            <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-500/10 rounded-tl-[100%]" />
+            {/* Decorative corner elements - hidden on mobile */}
+            <div className="hidden sm:block absolute top-0 left-0 w-20 lg:w-32 h-20 lg:h-32 bg-amber-500/10 rounded-br-[100%]" />
+            <div className="hidden sm:block absolute bottom-0 right-0 w-20 lg:w-32 h-20 lg:h-32 bg-purple-500/10 rounded-tl-[100%]" />
             
             <div className="relative z-10">
-              <div className="flex items-center justify-center gap-5 mb-8">
-                <Sparkles className="text-amber-500 animate-spin drop-shadow-lg" size={48} strokeWidth={2.5} />
-                <h1 className="text-8xl font-black bg-gradient-to-r from-amber-600 via-purple-600 to-amber-600 bg-clip-text text-transparent drop-shadow-2xl">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mb-4 sm:mb-8">
+                <Sparkles className="text-amber-500 animate-spin drop-shadow-lg" size={32} strokeWidth={2.5} />
+                <h1 className="text-4xl sm:text-6xl lg:text-8xl font-black bg-gradient-to-r from-amber-600 via-purple-600 to-amber-600 bg-clip-text text-transparent drop-shadow-2xl">
                   Attendance Portal
                 </h1>
-                <Zap className="text-purple-500 animate-bounce drop-shadow-lg" size={48} strokeWidth={2.5} />
+                <Zap className="text-purple-500 animate-bounce drop-shadow-lg" size={32} strokeWidth={2.5} />
               </div>
               
-              <p className="text-3xl font-black text-muted-foreground mb-8 tracking-wide">
+              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-muted-foreground mb-4 sm:mb-8 tracking-wide">
                 Chandigarh University <span className="text-amber-500">•</span> CSE Department
               </p>
               
               {lastUpdated && (
-                <div className="inline-flex items-center gap-4 px-8 py-4 rounded-[24px] glass-effect border border-amber-500/20 shadow-xl mb-6">
-                  <Calendar size={24} className="text-amber-500" strokeWidth={2.5} />
-                  <span className="text-base font-bold">
+                <div className="inline-flex items-center gap-2 sm:gap-4 px-4 sm:px-8 py-2 sm:py-4 rounded-2xl sm:rounded-[24px] glass-effect border border-amber-500/20 shadow-xl mb-4 sm:mb-6">
+                  <Calendar size={18} className="text-amber-500 sm:hidden" strokeWidth={2.5} />
+                  <Calendar size={24} className="hidden sm:block text-amber-500" strokeWidth={2.5} />
+                  <span className="text-xs sm:text-base font-bold">
                     Last updated: {lastUpdated.toLocaleString()}
                   </span>
                 </div>
               )}
               
               {stats.total > 0 && (
-                <div className="mt-10 inline-block">
-                  <div className="px-16 py-6 rounded-[32px] bg-gradient-to-r from-amber-500 via-purple-500 to-amber-500 text-white font-black text-4xl shadow-2xl pulse-glow relative overflow-hidden border-4 border-white/20">
+                <div className="mt-6 sm:mt-10 inline-block">
+                  <div className="px-6 sm:px-12 lg:px-16 py-3 sm:py-5 lg:py-6 rounded-3xl sm:rounded-[32px] bg-gradient-to-r from-amber-500 via-purple-500 to-amber-500 text-white font-black text-xl sm:text-3xl lg:text-4xl shadow-2xl pulse-glow relative overflow-hidden border-2 sm:border-4 border-white/20">
                     <div className="absolute inset-0 shimmer" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                    <span className="relative z-10 flex items-center gap-4 drop-shadow-lg">
-                      <Award size={40} strokeWidth={2.5} />
-                      Attendance Rate: {stats.percentage}%
-                      <TrendingUp size={40} strokeWidth={2.5} />
+                    <span className="relative z-10 flex items-center gap-2 sm:gap-4 drop-shadow-lg">
+                      <Award size={24} className="sm:hidden" strokeWidth={2.5} />
+                      <Award size={40} className="hidden sm:block" strokeWidth={2.5} />
+                      <span className="text-sm sm:text-3xl lg:text-4xl">Attendance Rate: {stats.percentage}%</span>
+                      <TrendingUp size={24} className="sm:hidden" strokeWidth={2.5} />
+                      <TrendingUp size={40} className="hidden sm:block" strokeWidth={2.5} />
                     </span>
                   </div>
                 </div>
@@ -452,18 +459,19 @@ const Home = () => {
         </div>
 
         {error && (
-          <div className="ultra-glass border-2 border-red-500 text-red-600 px-8 py-6 rounded-3xl font-bold text-lg fade-in-scale">
+          <div className="ultra-glass border-2 border-red-500 text-red-600 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 rounded-2xl sm:rounded-3xl font-bold text-sm sm:text-base lg:text-lg fade-in-scale">
             ⚠️ {error}
           </div>
         )}
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-24 space-y-6">
-            <Digital color="hsl(var(--primary))" size={64} speed={1} animating={true} />
-            <p className="text-2xl font-bold text-muted-foreground">Loading students...</p>
+          <div className="flex flex-col items-center justify-center py-12 sm:py-16 lg:py-24 space-y-4 sm:space-y-6">
+            <Digital color="hsl(var(--primary))" size={48} speed={1} animating={true} className="sm:hidden" />
+            <Digital color="hsl(var(--primary))" size={64} speed={1} animating={true} className="hidden sm:block" />
+            <p className="text-lg sm:text-2xl font-bold text-muted-foreground">Loading students...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {displayedData.length > 0 ? (
               displayedData.map((student, idx) => (
                 <div key={student.uid} className="fade-in" style={{ animationDelay: `${idx * 0.05}s` }}>
@@ -476,15 +484,16 @@ const Home = () => {
               ))
             ) : (
               <div className="col-span-full">
-                <div className="ultra-glass p-20 text-center rounded-[32px] border-2 border-dashed border-border">
-                  <div className="space-y-6">
-                    <div className="p-8 rounded-full bg-gradient-to-br from-amber-500/20 to-purple-500/20 inline-block">
-                      <Search size={64} className="text-muted-foreground" />
+                <div className="ultra-glass p-8 sm:p-12 lg:p-20 text-center rounded-2xl sm:rounded-3xl lg:rounded-[32px] border-2 border-dashed border-border">
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="p-6 sm:p-8 rounded-full bg-gradient-to-br from-amber-500/20 to-purple-500/20 inline-block">
+                      <Search size={48} className="text-muted-foreground sm:hidden" />
+                      <Search size={64} className="hidden sm:block text-muted-foreground" />
                     </div>
-                    <h3 className="text-3xl font-black text-foreground">
+                    <h3 className="text-2xl sm:text-3xl font-black text-foreground">
                       {data.length > 0 ? 'No students found' : 'Ready to start'}
                     </h3>
-                    <p className="text-lg text-muted-foreground max-w-md mx-auto">
+                    <p className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto px-4">
                       {data.length > 0 
                         ? 'Try adjusting your search filters' 
                         : 'Click search to load students'}
