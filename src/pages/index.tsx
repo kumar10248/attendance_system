@@ -23,7 +23,7 @@ interface Filters {
   group: string;
 }
 
-// Modern 3D Stat Card
+// Premium 3D Stat Card
 const StatCard = memo(({ icon: Icon, label, value, colorClass, gradient }: { 
   icon: React.ElementType; 
   label: string; 
@@ -31,33 +31,44 @@ const StatCard = memo(({ icon: Icon, label, value, colorClass, gradient }: {
   colorClass: string;
   gradient: string;
 }) => (
-  <div className="card-3d ultra-glass rounded-3xl p-8 relative overflow-hidden group">
+  <div className="card-3d ultra-glass rounded-[32px] p-10 relative overflow-hidden group border border-amber-500/10 hover:border-amber-500/25 transition-all duration-500">
     {/* Animated background gradient */}
-    <div className={`absolute inset-0 ${gradient} opacity-0 group-hover:opacity-20 transition-all duration-500`} />
+    <div className={`absolute inset-0 ${gradient} opacity-0 group-hover:opacity-25 transition-all duration-500`} />
     
-    {/* Decorative elements */}
-    <div className="absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br from-amber-500/20 to-purple-500/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
+    {/* Enhanced decorative elements */}
+    <div className="absolute -right-10 -top-10 w-40 h-40 bg-gradient-to-br from-amber-500/20 to-purple-500/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
+    <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-gradient-to-tr from-purple-500/15 to-amber-500/15 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700" />
     
     <div className="relative z-10">
-      <div className="flex items-center justify-between mb-6">
-        <div className={`p-4 rounded-2xl ${colorClass} bg-opacity-10 backdrop-blur-sm shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
-          <Icon size={32} className={colorClass} strokeWidth={2.5} />
+      <div className="flex items-center justify-between mb-8">
+        <div className={`p-5 rounded-[20px] ${gradient} shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative overflow-hidden`}>
+          <div className="absolute inset-0 shimmer opacity-20" />
+          <Icon size={36} className="text-white relative z-10" strokeWidth={2.5} />
         </div>
-        <Star className={`${colorClass} opacity-30 group-hover:opacity-100 transition-opacity duration-300`} size={24} />
+        <div className="relative">
+          <Star className={`${colorClass} opacity-40 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-180 group-hover:scale-125 drop-shadow-lg`} size={28} strokeWidth={2.5} />
+        </div>
       </div>
       
-      <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2 opacity-80">
+      <p className="text-sm font-black text-muted-foreground uppercase tracking-[0.2em] mb-3 opacity-90">
         {label}
       </p>
-      <p className={`text-5xl font-black ${colorClass} mb-2`}>{value}</p>
+      <p className={`text-6xl font-black ${colorClass} mb-4 drop-shadow-lg tracking-tight`}>{value}</p>
       
-      {/* Progress indicator */}
-      <div className="h-1.5 bg-muted rounded-full overflow-hidden mt-4">
+      {/* Enhanced progress indicator */}
+      <div className="h-2 bg-muted/50 rounded-full overflow-hidden mt-6 shadow-inner">
         <div 
-          className={`h-full ${gradient} rounded-full transition-all duration-1000 ease-out`}
+          className={`h-full ${gradient} rounded-full transition-all duration-1000 ease-out shadow-lg relative overflow-hidden`}
           style={{ width: `${Math.min(value / 5, 100)}%` }}
-        />
+        >
+          <div className="absolute inset-0 shimmer opacity-50" />
+        </div>
       </div>
+      
+      {/* Percentage label */}
+      <p className="text-xs font-bold text-muted-foreground mt-2 text-right">
+        {Math.min(Math.round((value / 5) * 100), 100)}% capacity
+      </p>
     </div>
   </div>
 ));
@@ -73,108 +84,122 @@ const StudentCard = memo(({
   isPresent: boolean; 
   onToggle: (uid: string) => void;
 }) => (
-  <div className="card-3d ultra-glass rounded-3xl overflow-hidden group relative">
-    {/* Gradient header with mesh background */}
-    <div className="relative h-36 bg-gradient-to-br from-amber-500 via-purple-500 to-amber-600 overflow-hidden">
+  <div className="card-3d ultra-glass rounded-[32px] overflow-hidden group relative border border-amber-500/10 hover:border-amber-500/30 transition-all duration-500">
+    {/* Enhanced gradient header with mesh background */}
+    <div className="relative h-40 bg-gradient-to-br from-amber-600 via-purple-600 to-amber-500 overflow-hidden">
       {/* Animated mesh pattern */}
-      <div className="absolute inset-0 bg-mesh-gradient opacity-50" />
+      <div className="absolute inset-0 bg-mesh-gradient opacity-40" />
       <div className="absolute inset-0 shimmer" />
       
-      {/* Floating particles effect */}
-      <div className="absolute top-4 right-4 w-2 h-2 bg-white rounded-full animate-ping" />
-      <div className="absolute top-8 right-12 w-1.5 h-1.5 bg-white rounded-full animate-pulse delay-75" />
-      <div className="absolute top-6 right-20 w-1 h-1 bg-white rounded-full animate-ping delay-150" />
+      {/* Enhanced floating particles */}
+      <div className="absolute top-4 right-4 w-3 h-3 bg-white/90 rounded-full animate-ping shadow-lg" />
+      <div className="absolute top-8 right-12 w-2 h-2 bg-amber-200/90 rounded-full animate-pulse delay-75 shadow-md" />
+      <div className="absolute top-6 right-20 w-1.5 h-1.5 bg-white/80 rounded-full animate-ping delay-150" />
+      <div className="absolute bottom-6 left-8 w-2 h-2 bg-purple-200/80 rounded-full animate-pulse delay-300" />
       
-      {/* Status badge - floating */}
+      {/* Decorative corner elements */}
+      <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-bl-[100%]" />
+      <div className="absolute bottom-0 left-0 w-20 h-20 bg-black/10 rounded-tr-[100%]" />
+      
+      {/* Premium status badge */}
       <div className="absolute top-4 left-4 z-20">
-        <div className={`px-4 py-2 rounded-full backdrop-blur-xl font-bold text-xs shadow-2xl border-2 flex items-center gap-2 ${
+        <div className={`px-5 py-2.5 rounded-2xl backdrop-blur-2xl font-black text-xs shadow-2xl border-2 flex items-center gap-2.5 relative overflow-hidden ${
           isPresent
-            ? "bg-green-500/90 text-white border-green-300/50"
-            : "bg-red-500/90 text-white border-red-300/50"
+            ? "bg-gradient-to-r from-green-500/95 to-emerald-500/95 text-white border-green-300/60 shadow-green-500/50"
+            : "bg-gradient-to-r from-red-500/95 to-rose-500/95 text-white border-red-300/60 shadow-red-500/50"
         }`}>
-          {isPresent ? <CheckCircle size={14} /> : <XCircle size={14} />}
-          {isPresent ? "Present" : "Absent"}
+          <div className="absolute inset-0 shimmer opacity-30" />
+          <span className="relative z-10 flex items-center gap-2">
+            {isPresent ? <CheckCircle size={15} strokeWidth={3} /> : <XCircle size={15} strokeWidth={3} />}
+            {isPresent ? "PRESENT" : "ABSENT"}
+          </span>
         </div>
       </div>
     </div>
 
-    {/* Profile avatar - 3D floating */}
-    <div className="absolute left-1/2 top-24 -translate-x-1/2 z-10">
+    {/* Enhanced profile avatar - 3D floating */}
+    <div className="absolute left-1/2 top-28 -translate-x-1/2 z-10">
       <div className="relative group/avatar">
-        <div className="w-32 h-32 rounded-3xl border-4 border-card shadow-2xl bg-gradient-to-br from-amber-400 via-purple-500 to-amber-600 p-1 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 float">
-          <div className="w-full h-full rounded-[20px] bg-card flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-purple-500/20" />
-            <User size={48} className="text-primary relative z-10" strokeWidth={2} />
+        {/* Outer glow ring */}
+        <div className="absolute -inset-2 bg-gradient-to-r from-amber-500 via-purple-500 to-amber-500 rounded-[28px] blur-2xl opacity-60 group-hover:opacity-90 transition-opacity animate-pulse" />
+        
+        {/* Main avatar */}
+        <div className="relative w-36 h-36 rounded-[28px] border-[5px] border-background shadow-2xl bg-gradient-to-br from-amber-500 via-purple-500 to-amber-600 p-1.5 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 float">
+          <div className="w-full h-full rounded-[20px] bg-gradient-to-br from-card to-card/80 flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 via-purple-500/20 to-amber-500/20" />
+            <div className="absolute inset-0 bg-mesh-gradient opacity-10" />
+            <User size={56} className="text-amber-600 dark:text-amber-400 relative z-10 drop-shadow-lg" strokeWidth={2.5} />
           </div>
         </div>
-        {/* Glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-purple-500 rounded-3xl blur-xl opacity-50 group-hover/avatar:opacity-75 transition-opacity -z-10" />
       </div>
     </div>
 
-    {/* Content */}
-    <div className="pt-24 px-6 pb-6 relative">
-      {/* Name with gradient */}
-      <h3 className="text-2xl font-black text-center text-foreground mb-6 line-clamp-2 min-h-[4rem] text-shimmer">
+    {/* Enhanced content */}
+    <div className="pt-28 px-7 pb-7 relative">
+      {/* Name with enhanced gradient */}
+      <h3 className="text-2xl font-black text-center bg-gradient-to-r from-amber-600 via-purple-600 to-amber-600 bg-clip-text text-transparent mb-8 line-clamp-2 min-h-[4rem] drop-shadow-sm">
         {student.name}
       </h3>
 
-      {/* Info Grid with 3D cards */}
+      {/* Enhanced Info Grid with better 3D effects */}
       <div className="space-y-3 mb-8">
-        <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-amber-500/10 to-amber-500/5 hover:from-amber-500/20 hover:to-amber-500/10 transition-all duration-300 group/item">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 shadow-lg group-hover/item:scale-110 transition-transform">
-            <BookOpen size={18} className="text-white" strokeWidth={2.5} />
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 to-amber-500/5 hover:from-amber-500/25 hover:to-amber-500/15 transition-all duration-300 group/item border border-amber-500/10 hover:border-amber-500/30 shadow-lg hover:shadow-amber-500/20">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 shadow-xl group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
+            <BookOpen size={20} className="text-white" strokeWidth={2.5} />
           </div>
           <div className="flex-1">
-            <p className="text-xs text-muted-foreground font-semibold uppercase">UID</p>
-            <p className="text-sm font-bold text-foreground">{student.uid}</p>
+            <p className="text-xs text-muted-foreground font-black uppercase tracking-wider mb-0.5">UID</p>
+            <p className="text-base font-black text-foreground">{student.uid}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-purple-500/10 to-purple-500/5 hover:from-purple-500/20 hover:to-purple-500/10 transition-all duration-300 group/item">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg group-hover/item:scale-110 transition-transform">
-            <Users size={18} className="text-white" strokeWidth={2.5} />
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-purple-500/15 to-purple-500/5 hover:from-purple-500/25 hover:to-purple-500/15 transition-all duration-300 group/item border border-purple-500/10 hover:border-purple-500/30 shadow-lg hover:shadow-purple-500/20">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-xl group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
+            <Users size={20} className="text-white" strokeWidth={2.5} />
           </div>
           <div className="flex-1">
-            <p className="text-xs text-muted-foreground font-semibold uppercase">Section</p>
-            <p className="text-sm font-bold text-foreground">{student.section}</p>
+            <p className="text-xs text-muted-foreground font-black uppercase tracking-wider mb-0.5">Section</p>
+            <p className="text-base font-black text-foreground">{student.section}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-silver-500/10 to-silver-500/5 hover:from-silver-500/20 hover:to-silver-500/10 transition-all duration-300 group/item">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-silver-500 to-silver-600 shadow-lg group-hover/item:scale-110 transition-transform">
-            <MapPin size={18} className="text-white" strokeWidth={2.5} />
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-silver-500/15 to-silver-500/5 hover:from-silver-500/25 hover:to-silver-500/15 transition-all duration-300 group/item border border-silver-500/10 hover:border-silver-500/30 shadow-lg hover:shadow-silver-500/20">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-silver-500 to-silver-600 shadow-xl group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
+            <MapPin size={20} className="text-white" strokeWidth={2.5} />
           </div>
           <div className="flex-1">
-            <p className="text-xs text-muted-foreground font-semibold uppercase">Group</p>
-            <p className="text-sm font-bold text-foreground">{student.group}</p>
+            <p className="text-xs text-muted-foreground font-black uppercase tracking-wider mb-0.5">Group</p>
+            <p className="text-base font-black text-foreground">{student.group}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-amber-500/10 to-purple-500/5 hover:from-amber-500/20 hover:to-purple-500/10 transition-all duration-300 group/item">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-amber-500 to-purple-500 shadow-lg group-hover/item:scale-110 transition-transform">
-            <Calendar size={18} className="text-white" strokeWidth={2.5} />
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-purple-500/10 to-purple-500/5 hover:from-amber-500/25 hover:via-purple-500/20 hover:to-purple-500/15 transition-all duration-300 group/item border border-amber-500/10 hover:border-purple-500/30 shadow-lg hover:shadow-purple-500/20">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 via-purple-500 to-purple-600 shadow-xl group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
+            <Calendar size={20} className="text-white" strokeWidth={2.5} />
           </div>
           <div className="flex-1">
-            <p className="text-xs text-muted-foreground font-semibold uppercase">Batch</p>
-            <p className="text-sm font-bold text-foreground">{student.batch}</p>
+            <p className="text-xs text-muted-foreground font-black uppercase tracking-wider mb-0.5">Batch</p>
+            <p className="text-base font-black text-foreground">{student.batch}</p>
           </div>
         </div>
       </div>
 
-      {/* Action Button - Modern 3D */}
+      {/* Premium Action Button with enhanced 3D */}
       <button
         onClick={() => onToggle(student.uid)}
-        className={`w-full py-4 px-6 rounded-2xl font-black text-white shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-3xl active:scale-95 relative overflow-hidden group/btn ${
+        className={`w-full py-5 px-6 rounded-2xl font-black text-base text-white shadow-2xl transform transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl active:scale-[0.98] relative overflow-hidden group/btn border-2 ${
           isPresent
-            ? "bg-gradient-to-r from-green-500 via-green-600 to-green-500"
-            : "bg-gradient-to-r from-red-500 via-red-600 to-red-500"
+            ? "bg-gradient-to-r from-green-500 via-emerald-600 to-green-500 border-green-400/50 hover:border-green-300/70"
+            : "bg-gradient-to-r from-red-500 via-rose-600 to-red-500 border-red-400/50 hover:border-red-300/70"
         }`}
       >
-        <span className="absolute inset-0 shimmer" />
-        <span className="relative z-10 flex items-center justify-center gap-2">
-          {isPresent ? <XCircle size={20} /> : <CheckCircle size={20} />}
-          Mark {isPresent ? "Absent" : "Present"}
+        <div className="absolute inset-0 shimmer" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        <span className="relative z-10 flex items-center justify-center gap-2.5 drop-shadow-lg">
+          {isPresent ? <XCircle size={22} strokeWidth={3} /> : <CheckCircle size={22} strokeWidth={3} />}
+          <span className="tracking-wide">
+            Mark {isPresent ? "Absent" : "Present"}
+          </span>
         </span>
       </button>
     </div>
@@ -316,39 +341,44 @@ const Home = () => {
       <div className="relative z-10 max-w-[1600px] mx-auto px-6 py-12 space-y-12">
         {/* Hero Header */}
         <header className="text-center fade-in-scale">
-          <div className="ultra-glass rounded-[32px] p-12 relative overflow-hidden">
+          <div className="ultra-glass rounded-[40px] p-14 relative overflow-hidden border border-amber-500/10">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-purple-500/10 to-amber-500/10 animate-pulse" />
             
+            {/* Decorative corner elements */}
+            <div className="absolute top-0 left-0 w-32 h-32 bg-amber-500/10 rounded-br-[100%]" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-500/10 rounded-tl-[100%]" />
+            
             <div className="relative z-10">
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <Sparkles className="text-amber-500 animate-spin" size={40} />
-                <h1 className="text-7xl font-black text-shimmer neon-glow">
+              <div className="flex items-center justify-center gap-5 mb-8">
+                <Sparkles className="text-amber-500 animate-spin drop-shadow-lg" size={48} strokeWidth={2.5} />
+                <h1 className="text-8xl font-black bg-gradient-to-r from-amber-600 via-purple-600 to-amber-600 bg-clip-text text-transparent drop-shadow-2xl">
                   Attendance Portal
                 </h1>
-                <Zap className="text-purple-500 animate-bounce" size={40} />
+                <Zap className="text-purple-500 animate-bounce drop-shadow-lg" size={48} strokeWidth={2.5} />
               </div>
               
-              <p className="text-2xl font-bold text-muted-foreground mb-6">
-                Chandigarh University • CSE Department
+              <p className="text-3xl font-black text-muted-foreground mb-8 tracking-wide">
+                Chandigarh University <span className="text-amber-500">•</span> CSE Department
               </p>
               
               {lastUpdated && (
-                <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full glass-effect">
-                  <Calendar size={20} className="text-amber-500" />
-                  <span className="text-sm font-semibold">
+                <div className="inline-flex items-center gap-4 px-8 py-4 rounded-[24px] glass-effect border border-amber-500/20 shadow-xl mb-6">
+                  <Calendar size={24} className="text-amber-500" strokeWidth={2.5} />
+                  <span className="text-base font-bold">
                     Last updated: {lastUpdated.toLocaleString()}
                   </span>
                 </div>
               )}
               
               {stats.total > 0 && (
-                <div className="mt-8 inline-block">
-                  <div className="px-12 py-5 rounded-[28px] bg-gradient-to-r from-amber-500 via-purple-500 to-amber-500 text-white font-black text-3xl shadow-2xl pulse-glow relative overflow-hidden">
+                <div className="mt-10 inline-block">
+                  <div className="px-16 py-6 rounded-[32px] bg-gradient-to-r from-amber-500 via-purple-500 to-amber-500 text-white font-black text-4xl shadow-2xl pulse-glow relative overflow-hidden border-4 border-white/20">
                     <div className="absolute inset-0 shimmer" />
-                    <span className="relative z-10 flex items-center gap-3">
-                      <Award size={32} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                    <span className="relative z-10 flex items-center gap-4 drop-shadow-lg">
+                      <Award size={40} strokeWidth={2.5} />
                       Attendance Rate: {stats.percentage}%
-                      <TrendingUp size={32} />
+                      <TrendingUp size={40} strokeWidth={2.5} />
                     </span>
                   </div>
                 </div>
