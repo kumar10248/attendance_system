@@ -1,11 +1,10 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Digital } from "react-activity";
-import { User, MapPin, Users, BookOpen, Calendar, Download, Search } from "lucide-react";
+import { User, MapPin, Users, BookOpen, Calendar, Download, Search, Sparkles } from "lucide-react";
 import "react-activity/dist/Digital.css";
-import * as XLSX from "xlsx";
 
 interface Student {
   uid: string;
@@ -21,8 +20,115 @@ interface Filters {
   group: string;
 }
 
+// Memoized stat card component
+const StatCard = memo(({ icon: Icon, label, value, colorClass }: { 
+  icon: React.ElementType; 
+  label: string; 
+  value: number; 
+  colorClass: string;
+}) => (
+  <Card className="bg-card hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-2 border-border/50 overflow-hidden group">
+    <div className="absolute inset-0 bg-gradient-amber-purple opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
+    <CardContent className="p-6 text-center relative z-10">
+      <div className="mb-3 flex justify-center">
+        <div className={`p-3 rounded-full ${colorClass} bg-opacity-10 group-hover:scale-110 transition-transform duration-300`}>
+          <Icon size={28} className={colorClass} />
+        </div>
+      </div>
+      <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+        {label}
+      </p>
+      <p className={`text-4xl font-bold ${colorClass}`}>{value}</p>
+    </CardContent>
+  </Card>
+));
+StatCard.displayName = "StatCard";
+
+// Memoized student card component
+const StudentCard = memo(({ 
+  student, 
+  isPresent, 
+  onToggle 
+}: { 
+  student: Student; 
+  isPresent: boolean; 
+  onToggle: (uid: string) => void;
+}) => (
+  <Card className="group overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 bg-card border-2 border-border/50 animate-fade-in">
+    <CardContent className="p-0 relative">
+      <div className="relative overflow-hidden">
+        <div className="h-28 bg-gradient-amber-purple relative">
+          <div className="absolute inset-0 shimmer opacity-30" />
+        </div>
+        
+        <div className="absolute -bottom-14 inset-x-0 flex justify-center">
+          <div className="w-28 h-28 rounded-full border-4 border-card shadow-2xl bg-gradient-to-br from-amber-500 to-purple-500 p-1 group-hover:scale-110 transition-transform duration-300">
+            <div className="w-full h-full rounded-full bg-card flex items-center justify-center">
+              <User size={40} className="text-primary" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="pt-20 px-6 pb-6">
+        <h3 className="text-xl font-bold text-center text-foreground mb-4 line-clamp-2 min-h-[3.5rem]">
+          {student.name}
+        </h3>
+
+        <div className="space-y-3 mb-6">
+          <div className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors">
+            <div className="p-2 rounded-lg bg-amber-500/10">
+              <BookOpen size={16} className="text-amber-600 dark:text-amber-500" />
+            </div>
+            <span className="text-sm font-medium">{student.uid}</span>
+          </div>
+          <div className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors">
+            <div className="p-2 rounded-lg bg-purple-500/10">
+              <Users size={16} className="text-purple-600 dark:text-purple-500" />
+            </div>
+            <span className="text-sm font-medium">Section {student.section}</span>
+          </div>
+          <div className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors">
+            <div className="p-2 rounded-lg bg-silver-500/10">
+              <MapPin size={16} className="text-silver-600 dark:text-silver-500" />
+            </div>
+            <span className="text-sm font-medium">Group {student.group}</span>
+          </div>
+          <div className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors">
+            <div className="p-2 rounded-lg bg-amber-500/10">
+              <Calendar size={16} className="text-amber-600 dark:text-amber-500" />
+            </div>
+            <span className="text-sm font-medium">Batch {student.batch}</span>
+          </div>
+        </div>
+
+        <div className="absolute top-3 right-3">
+          <span className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm ${
+            isPresent
+              ? "bg-green-500/90 text-white"
+              : "bg-red-500/90 text-white"
+          }`}>
+            {isPresent ? "✓ Present" : "✗ Absent"}
+          </span>
+        </div>
+
+        <Button
+          onClick={() => onToggle(student.uid)}
+          className={`w-full transform transition-all duration-300 hover:scale-105 font-semibold shadow-lg ${
+            isPresent
+              ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+              : "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
+          }`}
+        >
+          Mark {isPresent ? "Absent" : "Present"}
+        </Button>
+      </div>
+    </CardContent>
+  </Card>
+));
+StudentCard.displayName = "StudentCard";
+
 const Home = () => {
-  // State management
   const [filters, setFilters] = useState<Filters>({
     search: "",
     section: "",
@@ -34,15 +140,36 @@ const Home = () => {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [displayedData, setDisplayedData] = useState<Student[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
 
-  // Fetch data
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
+    
     try {
+      const cachedData = sessionStorage.getItem('students_data');
+      const cacheTimestamp = sessionStorage.getItem('students_cache_time');
+      const now = new Date().getTime();
+      
+      if (cachedData && cacheTimestamp && (now - parseInt(cacheTimestamp)) < 300000) {
+        const student = JSON.parse(cachedData);
+        setData(student);
+        const initialAttendance = student.reduce((acc: Record<string, boolean>, curr: Student) => {
+          acc[curr.uid] = true;
+          return acc;
+        }, {});
+        setAttendance(initialAttendance);
+        setLastUpdated(new Date(parseInt(cacheTimestamp)));
+        setLoading(false);
+        return;
+      }
+      
       const res = await fetch("https://students-list-backend.onrender.com/all");
       if (!res.ok) throw new Error('Failed to fetch students data');
       const { student } = await res.json();
+      
+      sessionStorage.setItem('students_data', JSON.stringify(student));
+      sessionStorage.setItem('students_cache_time', now.toString());
       
       setData(student);
       const initialAttendance = student.reduce((acc: Record<string, boolean>, curr: Student) => {
@@ -62,19 +189,29 @@ const Home = () => {
     fetchData();
   }, [fetchData]);
 
-  // Handlers
   const getFilteredData = useCallback(() => {
-    const searchLower = filters.search.toLowerCase();
-    const sectionLower = filters.section.toLowerCase();
-    const groupLower = filters.group.toLowerCase();
+    const searchLower = filters.search.toLowerCase().trim();
+    const sectionLower = filters.section.toLowerCase().trim();
+    const groupLower = filters.group.toLowerCase().trim();
 
-    return data.filter((student) => (
-      (student.name.toLowerCase().includes(searchLower) ||
-       student.uid.toLowerCase().includes(searchLower) ||
-       student.section.toLowerCase().includes(searchLower)) &&
-      student.section.toLowerCase().includes(sectionLower) &&
-      student.group.toLowerCase().includes(groupLower)
-    ));
+    if (!searchLower && !sectionLower && !groupLower) {
+      return data;
+    }
+
+    return data.filter((student) => {
+      const matchesSearch = !searchLower || 
+        student.name.toLowerCase().includes(searchLower) ||
+        student.uid.toLowerCase().includes(searchLower) ||
+        student.section.toLowerCase().includes(searchLower);
+      
+      const matchesSection = !sectionLower || 
+        student.section.toLowerCase().includes(sectionLower);
+      
+      const matchesGroup = !groupLower || 
+        student.group.toLowerCase().includes(groupLower);
+      
+      return matchesSearch && matchesSection && matchesGroup;
+    });
   }, [data, filters]);
 
   const handleSearch = useCallback(() => {
@@ -82,223 +219,166 @@ const Home = () => {
     setDisplayedData(filtered);
   }, [getFilteredData]);
 
-  const handleFilterChange = (key: keyof Filters) => (
+  const handleFilterChange = useCallback((key: keyof Filters) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setFilters(prev => ({ ...prev, [key]: e.target.value }));
-  };
+  }, []);
 
   const handleAttendance = useCallback((uid: string) => {
     setAttendance(prev => ({ ...prev, [uid]: !prev[uid] }));
   }, []);
 
-  const handleExport = useCallback(() => {
-    const attendanceData = displayedData.map((student) => ({
-      UID: student.uid,
-      Name: student.name,
-      Section: student.section,
-      Group: student.group,
-      Batch: student.batch,
-      Status: attendance[student.uid] ? "Present" : "Absent",
-      Timestamp: new Date().toLocaleString(),
-    }));
+  const handleExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      const XLSXModule = await import("xlsx");
+      
+      const attendanceData = displayedData.map((student) => ({
+        UID: student.uid,
+        Name: student.name,
+        Section: student.section,
+        Group: student.group,
+        Batch: student.batch,
+        Status: attendance[student.uid] ? "Present" : "Absent",
+        Timestamp: new Date().toLocaleString(),
+      }));
 
-    const worksheet = XLSX.utils.json_to_sheet(attendanceData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
-    
-    const maxWidth = attendanceData.reduce((w, r) => Math.max(w, r.Name.length), 10);
-    worksheet["!cols"] = [
-      { wch: 15 }, { wch: maxWidth }, { wch: 10 }, 
-      { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 20 }
-    ];
+      const worksheet = XLSXModule.utils.json_to_sheet(attendanceData);
+      const workbook = XLSXModule.utils.book_new();
+      XLSXModule.utils.book_append_sheet(workbook, worksheet, "Attendance");
+      
+      const maxWidth = attendanceData.reduce((w, r) => Math.max(w, r.Name.length), 10);
+      worksheet["!cols"] = [
+        { wch: 15 }, { wch: maxWidth }, { wch: 10 }, 
+        { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 20 }
+      ];
 
-    XLSX.writeFile(workbook, `Attendance_${new Date().toISOString().split('T')[0]}.xlsx`);
+      XLSXModule.writeFile(workbook, `Attendance_${new Date().toISOString().split('T')[0]}.xlsx`);
+    } catch (err) {
+      setError("Failed to export data. Please try again.");
+    } finally {
+      setIsExporting(false);
+    }
   }, [displayedData, attendance]);
 
-  // Stats calculations
   const stats = useMemo(() => ({
     total: displayedData.length,
     present: displayedData.filter(s => attendance[s.uid]).length,
     absent: displayedData.filter(s => !attendance[s.uid]).length,
+    percentage: displayedData.length > 0 
+      ? ((displayedData.filter(s => attendance[s.uid]).length / displayedData.length) * 100).toFixed(1)
+      : "0"
   }), [displayedData, attendance]);
 
   return (
-    <div className=" dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <header className="text-center mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Attendance Marking Solution
-          </h1>
-          <h2 className="text-xl text-gray-600 dark:text-gray-300">
-            Chandigarh University - 3rd Year CSE Program
+    <div className="min-h-screen bg-gradient-to-br from-background via-amber-50/20 to-purple-50/20 dark:from-background dark:via-amber-950/10 dark:to-purple-950/10">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+        <header className="text-center glass-effect rounded-2xl shadow-xl p-8 animate-fade-in border-2 border-border/50">
+          <div className="flex items-center justify-center mb-3">
+            <Sparkles className="text-amber-500 mr-2" size={32} />
+            <h1 className="text-5xl font-extrabold bg-gradient-amber-purple bg-clip-text text-transparent">
+              Attendance Portal
+            </h1>
+            <Sparkles className="text-purple-500 ml-2" size={32} />
+          </div>
+          <h2 className="text-xl text-muted-foreground font-medium">
+            Chandigarh University - CSE Department
           </h2>
           {lastUpdated && (
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-muted-foreground mt-3 flex items-center justify-center gap-2">
+              <Calendar size={16} />
               Last updated: {lastUpdated.toLocaleString()}
             </p>
           )}
+          {stats.total > 0 && (
+            <div className="mt-4 inline-block px-6 py-2 rounded-full bg-gradient-amber-purple text-white font-bold text-lg shadow-lg">
+              Attendance Rate: {stats.percentage}%
+            </div>
+          )}
         </header>
 
-        {/* Search and filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
+        <div className="glass-effect rounded-2xl shadow-xl p-6 animate-fade-in border-2 border-border/50">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <Input
               value={filters.search}
               onChange={handleFilterChange("search")}
-              placeholder="Search by name, UID, or section"
-              className="w-full bg-gray-50 dark:bg-gray-700"
+              placeholder="🔍 Search by name, UID, or section"
+              className="w-full bg-background/50 border-2 border-silver-500/30 focus:border-primary transition-all"
             />
             <Input
               value={filters.section}
               onChange={handleFilterChange("section")}
-              placeholder="Filter by section"
-              className="w-full bg-gray-50 dark:bg-gray-700"
+              placeholder="📚 Filter by section"
+              className="w-full bg-background/50 border-2 border-silver-500/30 focus:border-accent transition-all"
             />
             <Input
               value={filters.group}
               onChange={handleFilterChange("group")}
-              placeholder="Filter by group"
-              className="w-full bg-gray-50 dark:bg-gray-700"
+              placeholder="👥 Filter by group"
+              className="w-full bg-background/50 border-2 border-silver-500/30 focus:border-accent transition-all"
             />
             <Button 
               onClick={handleSearch}
-              className="w-full bg-blue-600 hover:bg-blue-700 gap-2"
+              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all gap-2"
             >
               <Search size={18} />
               Search
             </Button>
             <Button 
               onClick={handleExport}
-              className="w-full bg-green-600 hover:bg-green-700 gap-2"
-              disabled={displayedData.length === 0}
+              className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all gap-2"
+              disabled={displayedData.length === 0 || isExporting}
             >
               <Download size={18} />
-              Export
+              {isExporting ? "Exporting..." : "Export"}
             </Button>
           </div>
         </div>
 
-        {/* Stats cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card className="bg-white dark:bg-gray-800 transform hover:scale-105 transition-all duration-300">
-            <CardContent className="p-6 text-center">
-              <Users size={24} className="mx-auto mb-2 text-blue-500" />
-              <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">Total Students</p>
-              <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white dark:bg-gray-800 transform hover:scale-105 transition-all duration-300">
-            <CardContent className="p-6 text-center">
-              <User size={24} className="mx-auto mb-2 text-green-500" />
-              <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">Present</p>
-              <p className="text-3xl font-bold text-green-600">{stats.present}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white dark:bg-gray-800 transform hover:scale-105 transition-all duration-300">
-            <CardContent className="p-6 text-center">
-              <User size={24} className="mx-auto mb-2 text-red-500" />
-              <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">Absent</p>
-              <p className="text-3xl font-bold text-red-600">{stats.absent}</p>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+          <StatCard icon={Users} label="Total Students" value={stats.total} colorClass="text-amber-600 dark:text-amber-500" />
+          <StatCard icon={User} label="Present" value={stats.present} colorClass="text-green-600 dark:text-green-500" />
+          <StatCard icon={User} label="Absent" value={stats.absent} colorClass="text-red-600 dark:text-red-500" />
         </div>
 
-        {/* Error handling */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg mb-6">
-            {error}
+          <div className="bg-destructive/10 border-2 border-destructive text-destructive-foreground px-6 py-4 rounded-lg animate-fade-in font-medium">
+            ⚠️ {error}
           </div>
         )}
 
-        {/* Student cards grid */}
         {loading ? (
-          <div className="flex justify-center py-8">
-            <Digital color="#28a745" size={32} speed={1} animating={true} />
+          <div className="flex flex-col items-center justify-center py-16 space-y-4">
+            <Digital color="hsl(var(--primary))" size={48} speed={1} animating={true} />
+            <p className="text-muted-foreground text-lg font-medium">Loading students data...</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {displayedData.length > 0 ? (
               displayedData.map((student) => (
-                <Card 
+                <StudentCard
                   key={student.uid}
-                  className="group overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 bg-white dark:bg-gray-800"
-                >
-                  <CardContent className="p-0">
-                    {/* Card Header with Gradient */}
-                    <div className="relative">
-                      <div className="h-24 bg-gradient-to-r from-blue-500 to-purple-500" />
-                      
-                      {/* Profile Section */}
-                      <div className="absolute -bottom-12 inset-x-0 flex justify-center">
-                        <div className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-700 shadow-lg bg-white dark:bg-gray-700 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                          <User size={40} className="text-gray-500 dark:text-gray-400" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Content Section */}
-                    <div className="pt-16 px-6 pb-6">
-                      {/* Name */}
-                      <h3 className="text-xl font-semibold text-center text-gray-800 dark:text-white mb-4">
-                        {student.name}
-                      </h3>
-
-                      {/* Info Grid */}
-                      <div className="space-y-3 mb-6">
-                        <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
-                          <BookOpen size={18} className="text-blue-500" />
-                          <span>UID: {student.uid}</span>
-                        </div>
-                        <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
-                          <Users size={18} className="text-purple-500" />
-                          <span>Section: {student.section}</span>
-                        </div>
-                        <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
-                          <MapPin size={18} className="text-green-500" />
-                          <span>Group: {student.group}</span>
-                        </div>
-                        <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
-                          <Calendar size={18} className="text-orange-500" />
-                          <span>Batch: {student.batch}</span>
-                        </div>
-                      </div>
-
-                      {/* Status Badge */}
-                      <div className="absolute top-4 right-4">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          attendance[student.uid]
-                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
-                            : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
-                        }`}>
-                          {attendance[student.uid] ? "Present" : "Absent"}
-                        </span>
-                      </div>
-
-                      {/* Attendance Button */}
-                      <Button
-                        onClick={() => handleAttendance(student.uid)}
-                        className={`w-full transform transition-all duration-300 hover:scale-105 ${
-                          attendance[student.uid]
-                            ? "bg-green-500 hover:bg-green-600 text-white"
-                            : "bg-red-500 hover:bg-red-600 text-white"
-                        }`}
-                      >
-                        Mark {attendance[student.uid] ? "Absent" : "Present"}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                  student={student}
+                  isPresent={attendance[student.uid]}
+                  onToggle={handleAttendance}
+                />
               ))
             ) : (
               <div className="col-span-full">
-                <Card className="p-8 text-center bg-white dark:bg-gray-800 border-2 border-dashed">
+                <Card className="p-12 text-center glass-effect border-2 border-dashed border-border">
                   <div className="flex flex-col items-center justify-center space-y-4">
-                    <User size={48} className="text-gray-400" />
-                    <h3 className="text-lg font-medium text-gray-600 dark:text-gray-300">
-                      {data.length > 0 ? 'No students found matching the search criteria' : 'Click search to view students'}
+                    <div className="p-6 rounded-full bg-muted">
+                      <Search size={48} className="text-muted-foreground" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-foreground">
+                      {data.length > 0 ? 'No students found' : 'Ready to start'}
                     </h3>
+                    <p className="text-muted-foreground max-w-md">
+                      {data.length > 0 
+                        ? 'Try adjusting your search filters to find students' 
+                        : 'Click the search button to load and view all students'}
+                    </p>
                   </div>
                 </Card>
               </div>
