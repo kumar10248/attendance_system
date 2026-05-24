@@ -13,6 +13,9 @@ interface Student {
   section: string;
   group: string;
   batch: string;
+  type:string;
+  companyName:string;
+  status:string;
 }
 
 interface Filters {
@@ -263,6 +266,23 @@ const Home = () => {
                           <Calendar size={18} className="text-orange-500" />
                           <span>Batch: {student.batch}</span>
                         </div>
+
+                          <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
+                          <MapPin size={18} className="text-yellow-500" />
+                          <span>Company: {student.companyName}</span>
+                        </div>
+
+                          <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
+                          <MapPin size={18} className="text-red-500" />
+                          <span>Status: {student.status}</span>
+                          </div>
+
+                          <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
+                          <MapPin size={18} className="text-indigo-500" />
+                          <span>Type: {student.type}</span> 
+                          </div>
+
+        
                       </div>
 
                       {/* Status Badge */}
