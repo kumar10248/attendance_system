@@ -3,7 +3,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Digital } from "react-activity";
-import { User, MapPin, Users, BookOpen, Calendar, Download, Search } from "lucide-react";
+import {
+  User,
+  MapPin,
+  Users,
+  BookOpen,
+  Calendar,
+  Download,
+  Search,
+} from "lucide-react";
 import "react-activity/dist/Digital.css";
 import * as XLSX from "xlsx";
 
@@ -13,9 +21,9 @@ interface Student {
   section: string;
   group: string;
   batch: string;
-  type:string;
-  companyName:string;
-  status:string;
+  type: string;
+  companyName: string;
+  status: string;
 }
 
 interface Filters {
@@ -44,18 +52,25 @@ const Home = () => {
     setError(null);
     try {
       const res = await fetch("https://students-list-backend.onrender.com/all");
-      if (!res.ok) throw new Error('Failed to fetch students data');
+      if (!res.ok) throw new Error("Failed to fetch students data");
       const { student } = await res.json();
-      
+
       setData(student);
-      const initialAttendance = student.reduce((acc: Record<string, boolean>, curr: Student) => {
-        acc[curr.uid] = true;
-        return acc;
-      }, {});
+      const initialAttendance = student.reduce(
+        (acc: Record<string, boolean>, curr: Student) => {
+          acc[curr.uid] = true;
+          return acc;
+        },
+        {},
+      );
       setAttendance(initialAttendance);
       setLastUpdated(new Date());
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while fetching data');
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred while fetching data",
+      );
     } finally {
       setLoading(false);
     }
@@ -71,13 +86,14 @@ const Home = () => {
     const sectionLower = filters.section.toLowerCase();
     const groupLower = filters.group.toLowerCase();
 
-    return data.filter((student) => (
-      (student.name.toLowerCase().includes(searchLower) ||
-       student.uid.toLowerCase().includes(searchLower) ||
-       student.section.toLowerCase().includes(searchLower)) &&
-      student.section.toLowerCase().includes(sectionLower) &&
-      student.group.toLowerCase().includes(groupLower)
-    ));
+    return data.filter(
+      (student) =>
+        (student.name.toLowerCase().includes(searchLower) ||
+          student.uid.toLowerCase().includes(searchLower) ||
+          student.section.toLowerCase().includes(searchLower)) &&
+        student.section.toLowerCase().includes(sectionLower) &&
+        student.group.toLowerCase().includes(groupLower),
+    );
   }, [data, filters]);
 
   const handleSearch = useCallback(() => {
@@ -85,14 +101,13 @@ const Home = () => {
     setDisplayedData(filtered);
   }, [getFilteredData]);
 
-  const handleFilterChange = (key: keyof Filters) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFilters(prev => ({ ...prev, [key]: e.target.value }));
-  };
+  const handleFilterChange =
+    (key: keyof Filters) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFilters((prev) => ({ ...prev, [key]: e.target.value }));
+    };
 
   const handleAttendance = useCallback((uid: string) => {
-    setAttendance(prev => ({ ...prev, [uid]: !prev[uid] }));
+    setAttendance((prev) => ({ ...prev, [uid]: !prev[uid] }));
   }, []);
 
   const handleExport = useCallback(() => {
@@ -109,22 +124,36 @@ const Home = () => {
     const worksheet = XLSX.utils.json_to_sheet(attendanceData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
-    
-    const maxWidth = attendanceData.reduce((w, r) => Math.max(w, r.Name.length), 10);
+
+    const maxWidth = attendanceData.reduce(
+      (w, r) => Math.max(w, r.Name.length),
+      10,
+    );
     worksheet["!cols"] = [
-      { wch: 15 }, { wch: maxWidth }, { wch: 10 }, 
-      { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 20 }
+      { wch: 15 },
+      { wch: maxWidth },
+      { wch: 10 },
+      { wch: 10 },
+      { wch: 10 },
+      { wch: 10 },
+      { wch: 20 },
     ];
 
-    XLSX.writeFile(workbook, `Attendance_${new Date().toISOString().split('T')[0]}.xlsx`);
+    XLSX.writeFile(
+      workbook,
+      `Attendance_${new Date().toISOString().split("T")[0]}.xlsx`,
+    );
   }, [displayedData, attendance]);
 
   // Stats calculations
-  const stats = useMemo(() => ({
-    total: displayedData.length,
-    present: displayedData.filter(s => attendance[s.uid]).length,
-    absent: displayedData.filter(s => !attendance[s.uid]).length,
-  }), [displayedData, attendance]);
+  const stats = useMemo(
+    () => ({
+      total: displayedData.length,
+      present: displayedData.filter((s) => attendance[s.uid]).length,
+      absent: displayedData.filter((s) => !attendance[s.uid]).length,
+    }),
+    [displayedData, attendance],
+  );
 
   return (
     <div className=" dark:bg-gray-900">
@@ -165,14 +194,14 @@ const Home = () => {
               placeholder="Filter by group"
               className="w-full bg-gray-50 dark:bg-gray-700"
             />
-            <Button 
+            <Button
               onClick={handleSearch}
               className="w-full bg-blue-600 hover:bg-blue-700 gap-2"
             >
               <Search size={18} />
               Search
             </Button>
-            <Button 
+            <Button
               onClick={handleExport}
               className="w-full bg-green-600 hover:bg-green-700 gap-2"
               disabled={displayedData.length === 0}
@@ -188,21 +217,29 @@ const Home = () => {
           <Card className="bg-white dark:bg-gray-800 transform hover:scale-105 transition-all duration-300">
             <CardContent className="p-6 text-center">
               <Users size={24} className="mx-auto mb-2 text-blue-500" />
-              <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">Total Students</p>
+              <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">
+                Total Students
+              </p>
               <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
             </CardContent>
           </Card>
           <Card className="bg-white dark:bg-gray-800 transform hover:scale-105 transition-all duration-300">
             <CardContent className="p-6 text-center">
               <User size={24} className="mx-auto mb-2 text-green-500" />
-              <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">Present</p>
-              <p className="text-3xl font-bold text-green-600">{stats.present}</p>
+              <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">
+                Present
+              </p>
+              <p className="text-3xl font-bold text-green-600">
+                {stats.present}
+              </p>
             </CardContent>
           </Card>
           <Card className="bg-white dark:bg-gray-800 transform hover:scale-105 transition-all duration-300">
             <CardContent className="p-6 text-center">
               <User size={24} className="mx-auto mb-2 text-red-500" />
-              <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">Absent</p>
+              <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">
+                Absent
+              </p>
               <p className="text-3xl font-bold text-red-600">{stats.absent}</p>
             </CardContent>
           </Card>
@@ -224,7 +261,7 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {displayedData.length > 0 ? (
               displayedData.map((student) => (
-                <Card 
+                <Card
                   key={student.uid}
                   className="group overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2 bg-white dark:bg-gray-800"
                 >
@@ -232,11 +269,14 @@ const Home = () => {
                     {/* Card Header with Gradient */}
                     <div className="relative">
                       <div className="h-24 bg-gradient-to-r from-blue-500 to-purple-500" />
-                      
+
                       {/* Profile Section */}
                       <div className="absolute -bottom-12 inset-x-0 flex justify-center">
                         <div className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-700 shadow-lg bg-white dark:bg-gray-700 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                          <User size={40} className="text-gray-500 dark:text-gray-400" />
+                          <User
+                            size={40}
+                            className="text-gray-500 dark:text-gray-400"
+                          />
                         </div>
                       </div>
                     </div>
@@ -267,31 +307,31 @@ const Home = () => {
                           <span>Batch: {student.batch}</span>
                         </div>
 
-                          <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
+                        <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
+                          <MapPin size={18} className="text-red-500" />
+                          <span>Status: {student.status}</span>
+                        </div>
+
+                        <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
+                          <MapPin size={18} className="text-indigo-500" />
+                          <span>Type: {student.type}</span>
+                        </div>
+
+                        <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
                           <MapPin size={18} className="text-yellow-500" />
                           <span>Company: {student.companyName}</span>
                         </div>
-
-                          <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
-                          <MapPin size={18} className="text-red-500" />
-                          <span>Status: {student.status}</span>
-                          </div>
-
-                          <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-300">
-                          <MapPin size={18} className="text-indigo-500" />
-                          <span>Type: {student.type}</span> 
-                          </div>
-
-        
                       </div>
 
                       {/* Status Badge */}
                       <div className="absolute top-4 right-4">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          attendance[student.uid]
-                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
-                            : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
-                        }`}>
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            attendance[student.uid]
+                              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
+                              : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
+                          }`}
+                        >
                           {attendance[student.uid] ? "Present" : "Absent"}
                         </span>
                       </div>
@@ -317,7 +357,9 @@ const Home = () => {
                   <div className="flex flex-col items-center justify-center space-y-4">
                     <User size={48} className="text-gray-400" />
                     <h3 className="text-lg font-medium text-gray-600 dark:text-gray-300">
-                      {data.length > 0 ? 'No students found matching the search criteria' : 'Click search to view students'}
+                      {data.length > 0
+                        ? "No students found matching the search criteria"
+                        : "Click search to view students"}
                     </h3>
                   </div>
                 </Card>
